@@ -6,10 +6,7 @@ namespace Advanced.Models
     {
 
         public DataContext(DbContextOptions<DataContext> opts)
-            : base(opts) 
-        {
-            Database.EnsureCreated();
-        }
+            : base(opts) {}
 
         public DbSet<Person> People { get; set; }
         public DbSet<Department> Departments { get; set; }

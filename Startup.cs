@@ -25,13 +25,13 @@ namespace Advanced
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = Configuration.GetConnectionString("PeopleConnection");
             services.AddDbContext<DataContext>(opts => {
-                opts.UseSqlServer(connection);
+                opts.UseSqlServer(Configuration["ConnectionStrings:PeopleConnection"]);
                 opts.EnableSensitiveDataLogging(true);
             });
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddServerSideBlazor();
         }
 
         public void Configure(IApplicationBuilder app, DataContext context)
@@ -50,6 +50,7 @@ namespace Advanced
                     "controllers/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
+                endpoints.MapBlazorHub();
             });
 
             SeedData.SeedDatabase(context);
