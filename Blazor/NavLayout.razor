@@ -7,10 +7,16 @@
             {
                 <MultiNavLink class="btn btn-outline-primary btn-block"
                          href="@NavLinks[key]"
-                         ActiveClass="btn-primary text-white">
+                         ActiveClass="btn-primary text-white"
+                DisabledClasses="btn btn-dark text-light btn-block disabled"
+                    @ref="Refs[key]">
                     @key
                 </MultiNavLink>
             }
+            <button class="btn btn-secondary btn-block mt-5"
+                    @@onclick="ToggleLinks">
+                Toggle Links
+            </button>
         </div>
         <div class="col">
             @Body
@@ -20,10 +26,21 @@
 
 @code
 {
-    public Dictionary<string, string> NavLinks
-        = new Dictionary<string, string> {
-            {"people", "/people"},
-            {"departments", "/depts"},
-            {"details", "/person"}
+    public Dictionary<string, string[]> NavLinks
+        = new Dictionary<string, string[]> {
+            {"People", new string[] {"/people", "/"} },
+            {"Departments", new string[] {"/depts", "/departments"}},
+            {"Details", new string[] {"/person"}}
     };
+    public Dictionary<string, MultiNavLink> Refs
+        = new Dictionary<string, MultiNavLink>();
+    private bool LinksEnabled = true;
+    public void ToggleLinks()
+    {
+        LinksEnabled = !LinksEnabled;
+        foreach (MultiNavLink link in Refs.Values)
+        {
+            link.SetEnabled(LinksEnabled);
+        }
+    }
 }
