@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Advanced.Models;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace Advanced
 {
@@ -33,6 +34,11 @@ namespace Advanced
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddServerSideBlazor();
             services.AddSingleton < Services.ToggleService>();
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
         }
 
         public void Configure(IApplicationBuilder app, DataContext context)
@@ -52,8 +58,15 @@ namespace Advanced
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
+
+                endpoints.MapFallbackToClientSideBlazor<BlazorWebAssembly.Startup>
+                ("/webassembly/{*path:nonfile}", "index.html");
+
                 endpoints.MapFallbackToPage("/_Host");
             });
+
+            app.Map("/webassembly", opts =>
+                opts.UseClientSideBlazorFiles<BlazorWebAssembly.Startup>());
 
             SeedData.SeedDatabase(context);
         }
